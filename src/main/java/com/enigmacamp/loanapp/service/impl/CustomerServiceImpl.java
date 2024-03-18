@@ -1,12 +1,16 @@
 package com.enigmacamp.loanapp.service.impl;
 
 import com.enigmacamp.loanapp.model.entity.Customer;
+import com.enigmacamp.loanapp.model.response.CustomerResponse;
 import com.enigmacamp.loanapp.repository.CustomerRepository;
 import com.enigmacamp.loanapp.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,31 +19,68 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public Customer saveCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public void saveCustomer(Customer customer) {
+        customerRepository.save(customer);
     }
 
     @Override
-    public Customer getCustomerById(String id) {
-        return customerRepository.findById(id).get();
+    public CustomerResponse findCustomerById(String id) {
+        Customer customer =  customerRepository.findById(id).get();
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .dateOfBirth(customer.getDateOfBirth())
+                .phone(customer.getPhone())
+                .status(customer.isStatus())
+                .build();
     }
 
     @Override
-    public Customer findByIdCustomerIsDeleted(String id) {
-        return customerRepository.findByIdCustomerIsDeleted(id);
+    public CustomerResponse findByIdCustomerIsDeleted(String id) {
+        Customer customer = customerRepository.findByIdCustomerIsDeleted(id);
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .dateOfBirth(customer.getDateOfBirth())
+                .phone(customer.getPhone())
+                .status(customer.isStatus())
+                .build();
     }
 
     @Override
-    public List<Customer> getAllCustomer() {
-        return customerRepository.findAll();
+    public List<CustomerResponse> getAllCustomer() {
+       List<Customer> customerList = customerRepository.findAll();
+       List<CustomerResponse> responseList = new ArrayList<>();
+        for (Customer customer : customerList) {
+            CustomerResponse response = CustomerResponse.builder()
+                    .id(customer.getId())
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .dateOfBirth(customer.getDateOfBirth())
+                    .phone(customer.getPhone())
+                    .status(customer.isStatus())
+                    .build();
+            responseList.add(response);
+        }
+
+        return responseList;
     }
 
     @Override
     public Customer updateCustomer(Customer customer) {
-        if (customerRepository.findById(customer.getId()).isPresent()) {
-            return saveCustomer(customer);
+        Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
+        Date localDate = customer.getDateOfBirth();
+        if (updatedCustomer != null) {
+            updatedCustomer.setFirstName(customer.getFirstName());
+            updatedCustomer.setLastName(customer.getLastName());
+            updatedCustomer.setPhone(customer.getPhone());
+            updatedCustomer.setDateOfBirth(localDate);
+            updatedCustomer.setStatus(customer.isStatus());
+            return customerRepository.save(updatedCustomer);
         } else {
-            throw new RuntimeException("Product id : " + customer.getId() + " not found");
+            return null;
         }
     }
 
