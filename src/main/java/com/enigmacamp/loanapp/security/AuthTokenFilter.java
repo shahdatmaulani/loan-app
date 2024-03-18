@@ -26,7 +26,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // TODO : jwt token validation
         try {
             String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
             String token = null;
@@ -39,16 +38,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 System.out.println(userinfo);
                 UserDetails user = userService.loadUserByUserid(userinfo.get("userId"));
 
-                //Token Validation
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 user, null, user.getAuthorities());
 
-                //Add information such as address IP to security
                 usernamePasswordAuthenticationToken.setDetails(new
                         WebAuthenticationDetailsSource());
 
-                //save user authentication to spring boot
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }catch (Exception e){

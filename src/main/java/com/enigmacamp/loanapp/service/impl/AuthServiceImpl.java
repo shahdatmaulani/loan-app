@@ -1,16 +1,20 @@
 package com.enigmacamp.loanapp.service.impl;
 
 import com.enigmacamp.loanapp.model.entity.AppUser;
+import com.enigmacamp.loanapp.model.entity.Customer;
 import com.enigmacamp.loanapp.model.entity.Role;
 import com.enigmacamp.loanapp.model.entity.User;
 import com.enigmacamp.loanapp.model.request.AuthRequest;
+import com.enigmacamp.loanapp.model.request.CustomerInputDTO;
 import com.enigmacamp.loanapp.model.response.SignInResponse;
 import com.enigmacamp.loanapp.model.response.SignUpResponse;
 import com.enigmacamp.loanapp.repository.UserRepository;
 import com.enigmacamp.loanapp.security.JwtUtil;
 import com.enigmacamp.loanapp.service.AuthService;
+import com.enigmacamp.loanapp.service.CustomerService;
 import com.enigmacamp.loanapp.service.RoleService;
 import com.enigmacamp.loanapp.util.constant.ERole;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -31,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final RoleService roleService;
     private final UserRepository userRepository;
+    private final CustomerService customerService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
@@ -59,7 +64,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public SignUpResponse signUpCustomer(AuthRequest authRequest) {
+    @Transactional
+    public SignUpResponse signUpCustomer(CustomerInputDTO authRequest) {
         try {
             List<Role> roles = roleService.getOrSave(ERole.ROLE_CUSTOMER);
             User user = User.builder()
@@ -68,6 +74,16 @@ public class AuthServiceImpl implements AuthService {
                     .roles(roles)
                     .build();
             userRepository.save(user);
+
+            Customer customer = Customer.builder()
+                    .firstName(authRequest.getFirstName())
+                    .lastName(authRequest.getLastName())
+                    .phone((authRequest.getPhone()))
+                    .dateOfBirth(authRequest.getDateOfBirth())
+                    .user(user)
+                    .build();
+            customerService.saveCustomer(customer);
+
             List<ERole> eRoles = new ArrayList<>();
             for (Role role : roles) {
                 eRoles.add(role.getRoles());

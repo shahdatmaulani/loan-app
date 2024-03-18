@@ -1,6 +1,7 @@
 package com.enigmacamp.loanapp.controller;
 
 import com.enigmacamp.loanapp.model.request.AuthRequest;
+import com.enigmacamp.loanapp.model.request.CustomerInputDTO;
 import com.enigmacamp.loanapp.model.response.CommonResponse;
 import com.enigmacamp.loanapp.model.response.SignInResponse;
 import com.enigmacamp.loanapp.model.response.SignUpResponse;
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup/customer")
-    public ResponseEntity<?> signUpCustomer(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<?> signUpCustomer(@RequestBody CustomerInputDTO authRequest){
         SignUpResponse signUpResponse = authService.signUpCustomer(authRequest);
         CommonResponse<SignUpResponse> response = CommonResponse.<SignUpResponse>builder()
                 .message("Register User Customer Success")

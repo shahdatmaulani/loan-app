@@ -25,6 +25,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer findByIdCustomerIsDeleted(String id) {
+        return customerRepository.findByIdCustomerIsDeleted(id);
+    }
+
+    @Override
     public List<Customer> getAllCustomer() {
         return customerRepository.findAll();
     }
