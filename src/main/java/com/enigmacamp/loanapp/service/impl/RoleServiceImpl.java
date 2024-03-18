@@ -21,13 +21,13 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> getOrSave(ERole... roles) {
         List<Role> roleList = new ArrayList<>();
         for (ERole eRole : roles) {
-            Optional<Role> optionalRole = roleRepository.findByRole(eRole);
+            Optional<Role> optionalRole = roleRepository.findByRoles(eRole);
             Role role;
             if (optionalRole.isPresent()) {
                 role = optionalRole.get();
             } else {
                 role = new Role();
-                role.setRole(eRole);
+                role.setRoles(eRole);
                 role = roleRepository.save(role);
             }
             roleList.add(role);

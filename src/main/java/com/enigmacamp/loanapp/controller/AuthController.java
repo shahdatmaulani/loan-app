@@ -21,15 +21,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody AuthRequest authRequest){
-        SignUpResponse signUpResponse = authService.signUp(authRequest);
+    @PostMapping("/signup/admin")
+    public ResponseEntity<?> signUpAdmin(@RequestBody AuthRequest authRequest){
+        SignUpResponse signUpResponse = authService.signUpAdmin(authRequest);
         CommonResponse<SignUpResponse> response = CommonResponse.<SignUpResponse>builder()
-                .statusCode(HttpStatus.CREATED.value())
                 .message("Register User Admin Success")
                 .data(signUpResponse)
                 .build();
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode()))
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @PostMapping("/signup/customer")
+    public ResponseEntity<?> signUpCustomer(@RequestBody AuthRequest authRequest){
+        SignUpResponse signUpResponse = authService.signUpCustomer(authRequest);
+        CommonResponse<SignUpResponse> response = CommonResponse.<SignUpResponse>builder()
+                .message("Register User Customer Success")
+                .data(signUpResponse)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED.value())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
@@ -39,17 +50,18 @@ public class AuthController {
         SignInResponse signInResponse = authService.signIn(authRequest);
         CommonResponse<SignInResponse> response = new CommonResponse<>();
         if ( signInResponse != null) {
-            response.setStatusCode(HttpStatus.OK.value());
             response.setMessage("Sign In Success");
             response.setData(signInResponse);
+            return ResponseEntity.status(HttpStatus.OK.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
         } else {
-            response.setStatusCode(HttpStatus.EXPECTATION_FAILED.value());
             response.setMessage("Sign In Failed");
             response.setData(null);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
         }
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
     }
 
 }

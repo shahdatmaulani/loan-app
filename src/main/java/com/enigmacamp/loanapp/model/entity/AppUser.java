@@ -1,5 +1,6 @@
 package com.enigmacamp.loanapp.model.entity;
 
+import com.enigmacamp.loanapp.util.constant.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,15 +21,13 @@ public class AppUser implements UserDetails{
     private String id;
     private String email;
     private String password;
-    private List<Role> roles;
+    private List<ERole> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
-        if (roles != null) {
-            for (Role role : roles) {
-                simpleGrantedAuthorities.add(new SimpleGrantedAuthority(role.getRole().toString()));
-            }
+        for (ERole role : roles) {
+                simpleGrantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
         }
         return simpleGrantedAuthorities;
     }

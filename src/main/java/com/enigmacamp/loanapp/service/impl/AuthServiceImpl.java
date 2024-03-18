@@ -11,7 +11,6 @@ import com.enigmacamp.loanapp.security.JwtUtil;
 import com.enigmacamp.loanapp.service.AuthService;
 import com.enigmacamp.loanapp.service.RoleService;
 import com.enigmacamp.loanapp.util.constant.ERole;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,21 +36,45 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public SignUpResponse signUp(AuthRequest authRequest) {
+    public SignUpResponse signUpAdmin(AuthRequest authRequest) {
         try {
-            List<Role> roles = roleService.getOrSave(ERole.admin, ERole.staff);
+            List<Role> roles = roleService.getOrSave(ERole.ROLE_ADMIN, ERole.ROLE_STAFF);
             User user = User.builder()
                     .email(authRequest.getEmail())
                     .password(passwordEncoder.encode(authRequest.getPassword()))
                     .roles(roles)
                     .build();
             userRepository.save(user);
-            List<ERole> eRoles = roles.stream()
-                    .map(Role::getRole)
-                    .collect(Collectors.toList());
+            List<ERole> eRoles = new ArrayList<>();
+            for (Role role : roles) {
+                eRoles.add(role.getRoles());
+            }
             return SignUpResponse.builder()
                     .email(user.getEmail())
-                    .role(eRoles)
+                    .roles(eRoles)
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exist");
+        }
+    }
+
+    @Override
+    public SignUpResponse signUpCustomer(AuthRequest authRequest) {
+        try {
+            List<Role> roles = roleService.getOrSave(ERole.ROLE_CUSTOMER);
+            User user = User.builder()
+                    .email(authRequest.getEmail())
+                    .password(passwordEncoder.encode(authRequest.getPassword()))
+                    .roles(roles)
+                    .build();
+            userRepository.save(user);
+            List<ERole> eRoles = new ArrayList<>();
+            for (Role role : roles) {
+                eRoles.add(role.getRoles());
+            }
+            return SignUpResponse.builder()
+                    .email(user.getEmail())
+                    .roles(eRoles)
                     .build();
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exist");
@@ -69,8 +92,9 @@ public class AuthServiceImpl implements AuthService {
             AppUser appUser = (AppUser) authentication.getPrincipal();
             String token = jwtUtil.generateToken(appUser);
             return SignInResponse.builder()
-                    .token(token)
+                    .email(appUser.getEmail())
                     .roles(appUser.getRoles())
+                    .token(token)
                     .build();
         } catch (Exception e){
             System.out.println(e.getMessage());

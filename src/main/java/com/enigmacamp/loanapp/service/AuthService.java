@@ -5,7 +5,9 @@ import com.enigmacamp.loanapp.model.response.SignInResponse;
 import com.enigmacamp.loanapp.model.response.SignUpResponse;
 
 public interface AuthService {
-    SignUpResponse signUp(AuthRequest authRequest);
+    SignUpResponse signUpAdmin(AuthRequest authRequest);
+
+    SignUpResponse signUpCustomer(AuthRequest authRequest);
 
     SignInResponse signIn(AuthRequest authRequest);
 

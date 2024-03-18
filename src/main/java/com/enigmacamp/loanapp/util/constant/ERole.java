@@ -1,7 +1,7 @@
 package com.enigmacamp.loanapp.util.constant;
 
 public enum ERole {
-    customer,
-    staff,
-    admin
+    ROLE_CUSTOMER,
+    ROLE_STAFF,
+    ROLE_ADMIN
 }

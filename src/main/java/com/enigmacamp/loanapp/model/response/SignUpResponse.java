@@ -1,6 +1,5 @@
 package com.enigmacamp.loanapp.model.response;
 
-import com.enigmacamp.loanapp.model.entity.Role;
 import com.enigmacamp.loanapp.util.constant.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 public class SignUpResponse {
     private String email;
-    private List<ERole> role;
+    private List<ERole> roles;
 }
