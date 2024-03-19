@@ -56,9 +56,9 @@ public class CustomerController {
                 .body(response);
     }
     @PutMapping("customer/update")
-    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer customer) {
-        Customer result = customerService.updateCustomer(customer);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+    public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody Customer customer) {
+        CustomerResponse result = customerService.updateCustomer(customer);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .message("Successfully update user")
                 .data(result)
                 .build();

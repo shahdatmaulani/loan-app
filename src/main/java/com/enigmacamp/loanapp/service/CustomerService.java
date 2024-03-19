@@ -10,6 +10,6 @@ public interface CustomerService {
     CustomerResponse findCustomerById(String id);
     CustomerResponse findByIdCustomerIsDeleted(String id);
     List<CustomerResponse> getAllCustomer();
-    Customer updateCustomer(Customer customer);
+    CustomerResponse updateCustomer(Customer customer);
     void deleteCustomer(String id);
 }

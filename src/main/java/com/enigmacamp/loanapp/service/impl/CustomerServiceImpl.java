@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer updateCustomer(Customer customer) {
+    public CustomerResponse updateCustomer(Customer customer) {
         Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
         Date localDate = customer.getDateOfBirth();
         if (updatedCustomer != null) {
@@ -78,7 +77,15 @@ public class CustomerServiceImpl implements CustomerService {
             updatedCustomer.setPhone(customer.getPhone());
             updatedCustomer.setDateOfBirth(localDate);
             updatedCustomer.setStatus(customer.isStatus());
-            return customerRepository.save(updatedCustomer);
+            customerRepository.save(customer);
+            return CustomerResponse.builder()
+                    .id(customer.getId())
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .dateOfBirth(customer.getDateOfBirth())
+                    .phone(customer.getPhone())
+                    .status(customer.isStatus())
+                    .build();
         } else {
             return null;
         }
